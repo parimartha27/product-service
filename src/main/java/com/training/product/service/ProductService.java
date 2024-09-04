@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,15 +71,6 @@ public class ProductService {
 
     public ResponseEntity<ApiResponse> addProduct(ProductRequest request){
 
-        if(request.getName().isEmpty() || request.getDescription().isEmpty()
-                || request.getPrice() < 0L || request.getStock()< 0) {
-            return responseHelper.setResponse(
-                    HttpStatus.BAD_REQUEST,
-                    Constant.BAD_REQUEST,
-                    "Please fill all filed",
-                    null);
-        }
-
         ProductEntity productEntity = mapper.convertValue(request, ProductEntity.class);
         this.saveProduct(productEntity);
 
@@ -102,20 +94,12 @@ public class ProductService {
             );
         }
 
-        if(request.getName().isEmpty() || request.getDescription().isEmpty()
-                || request.getPrice() < 0L || request.getStock()< 0) {
-            return responseHelper.setResponse(
-                    HttpStatus.BAD_REQUEST,
-                    Constant.BAD_REQUEST,
-                    "Please fill all filed",
-                    null);
-        }
-
         ProductEntity editedProduct = productFromDb.get();
         editedProduct.setName(request.getName());
         editedProduct.setDescription(request.getDescription());
         editedProduct.setPrice(request.getPrice());
         editedProduct.setStock(request.getStock());
+        editedProduct.setUpdatedDate(LocalDateTime.now());
         this.saveProduct(editedProduct);
 
         return responseHelper.setResponse(
