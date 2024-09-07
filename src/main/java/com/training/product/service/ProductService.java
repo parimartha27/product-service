@@ -5,6 +5,7 @@ import com.training.product.constant.Constant;
 import com.training.product.dto.ApiResponse;
 import com.training.product.dto.ProductRequest;
 import com.training.product.dto.ProductResponse;
+import com.training.product.dto.UpdateStockRequest;
 import com.training.product.entity.ProductEntity;
 import com.training.product.repository.ProductRepository;
 import com.training.product.utils.ResponseHelper;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -126,6 +128,30 @@ public class ProductService {
                 HttpStatus.OK,
                 Constant.SUCCESS,
                 "Success deleted data product",
+                null);
+    }
+
+    public ResponseEntity<ApiResponse> updateProductStock(@RequestBody UpdateStockRequest request){
+        Optional<ProductEntity> productFromDb = productRepository.findByName(request.getProductName());
+
+        if(productFromDb.isPresent()){
+            ProductEntity product = productFromDb.get();
+
+            product.setStock(product.getStock() - request.getQuantity());
+            this.saveProduct(product);
+
+            return responseHelper.setResponse(
+                    HttpStatus.OK,
+                    Constant.SUCCESS,
+                    "Success updated stock",
+                    null
+            );
+        }
+
+        return responseHelper.setResponse(
+                HttpStatus.NOT_FOUND,
+                Constant.NOT_FOUND,
+                "Product with ID: " + request.getProductName() + " not found",
                 null);
     }
 
