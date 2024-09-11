@@ -1,8 +1,6 @@
 package com.training.product.controller;
 
-import com.training.product.dto.ApiResponse;
-import com.training.product.dto.ProductRequest;
-import com.training.product.dto.UpdateStockRequest;
+import com.training.product.dto.*;
 import com.training.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,8 +40,14 @@ public class ProductController {
         return productService.deleteProduct(id);
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<ApiResponse> updateProduct(@RequestBody UpdateStockRequest request) {
+    @PostMapping("/name")
+    public ResponseEntity<ApiResponse> findProductByName(@RequestBody FindByNameRequest request) {
+        return productService.getProductByName(request);
+    }
+    @PostMapping("/update/stock")
+    public ResponseEntity<ApiResponse> updateProductStock(@RequestBody UpdateStockRequest request) {
         return productService.updateProductStock(request);
     }
+
+
 }

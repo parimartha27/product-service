@@ -2,10 +2,7 @@ package com.training.product.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.training.product.constant.Constant;
-import com.training.product.dto.ApiResponse;
-import com.training.product.dto.ProductRequest;
-import com.training.product.dto.ProductResponse;
-import com.training.product.dto.UpdateStockRequest;
+import com.training.product.dto.*;
 import com.training.product.entity.ProductEntity;
 import com.training.product.repository.ProductRepository;
 import com.training.product.utils.ResponseHelper;
@@ -131,6 +128,23 @@ public class ProductService {
                 null);
     }
 
+    public ResponseEntity<ApiResponse> getProductByName(FindByNameRequest request) {
+        Optional<ProductEntity> data = productRepository.findByName(request.getName());
+
+        if(data.isPresent()){
+            ProductEntity entity = data.get();
+            ProductResponse response = ProductResponse.builder()
+                    .name(entity.getName())
+                    .stock(entity.getStock())
+                    .price(entity.getPrice())
+                    .description(entity.getDescription()).build();
+
+            return responseHelper.setResponse(HttpStatus.OK, "P-200", "Success", response);
+        }
+
+        return responseHelper.setResponse(HttpStatus.NOT_FOUND, "P-404", "Product not found", null);
+    }
+
     public ResponseEntity<ApiResponse> updateProductStock(@RequestBody UpdateStockRequest request){
         Optional<ProductEntity> productFromDb = productRepository.findByName(request.getProductName());
 
@@ -138,6 +152,7 @@ public class ProductService {
             ProductEntity product = productFromDb.get();
 
             product.setStock(product.getStock() - request.getQuantity());
+            product.setUpdatedDate(LocalDateTime.now());
             this.saveProduct(product);
 
             return responseHelper.setResponse(
