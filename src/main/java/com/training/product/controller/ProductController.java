@@ -44,10 +44,9 @@ public class ProductController {
     public ResponseEntity<ApiResponse> findProductByName(@RequestBody FindByNameRequest request) {
         return productService.getProductByName(request);
     }
+
     @PostMapping("/update/stock")
     public ResponseEntity<ApiResponse> updateProductStock(@RequestBody UpdateStockRequest request) {
         return productService.updateProductStock(request);
     }
-
-
 }
